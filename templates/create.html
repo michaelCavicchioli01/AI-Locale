@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Crea Nuovo Prodotto - AI Factory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ Crea un Nuovo Prodotto Digitale</h1>
+            <a href="/" class="back-link">⬅️ Torna alla Dashboard</a>
+        </header>
+
+        <form action="/create" method="POST" class="creation-form">
+            <div class="form-group">
+                <label for="product_type">1. Scegli il tipo di prodotto:</label>
+                <select id="product_type" name="product_type" required>
+                    <option value="E-book">📚 E-book</option>
+                    <option value="Articolo per Blog">✍️ Articolo per Blog</option>
+                    <option value="Script per Video YouTube">🎬 Script per Video YouTube</option>
+                    <option value="Piano di Allenamento">🏋️ Piano di Allenamento</option>
+                    <option value="Raccolta di Prompt per IA">🎨 Raccolta di Prompt per IA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="topic">2. Descrivi l'argomento in dettaglio:</label>
+                <textarea id="topic" name="topic" rows="4" placeholder="Es: 'Guida per principianti all'investimento in Bitcoin' oppure '5 ricette veloci per una cena salutare'" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="model">3. Scegli il modello IA:</label>
+                <select name="model" id="model">
+                    <option value="llama3">Llama 3 (Consigliato)</option>
+                    <option value="mixtral">Mixtral (Più Veloce)</option>
+                    <option value="phi3">Phi-3 (Ultra Veloce)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large">🚀 Genera Prodotto</button>
+        </form>
+    </div>
+</body>
+</html>

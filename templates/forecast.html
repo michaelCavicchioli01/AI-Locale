@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Previsione per {{ ticker }}</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #f48fb1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: #1e1e1e;
+    }
+
+    th, td {
+      border: 1px solid #444;
+      padding: 0.6rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #2a2a2a;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 2rem;
+      border: 1px solid #444;
+      border-radius: 8px;
+    }
+
+    a, select, button {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #90caf9;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .delta {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .positive {
+      color: #81c784;
+    }
+
+    .negative {
+      color: #e57373;
+    }
+
+    form {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="/" style="display:inline-block;margin-bottom:1rem;">🏠 Torna alla home</a>
+
+  <h1>🔮 Previsione per {{ ticker }}</h1>
+
+  <form method="get" action="">
+    <label for="months">Periodo:</label>
+    <select name="months" id="months" onchange="this.form.submit()">
+      <option value="1" {% if months == 1 %}selected{% endif %}>1 mese</option>
+      <option value="3" {% if months == 3 %}selected{% endif %}>3 mesi</option>
+      <option value="6" {% if months == 6 %}selected{% endif %}>6 mesi</option>
+    </select>
+  </form>
+
+  <div class="delta">
+    📈 Variazione prevista: 
+    <strong class="{% if delta < 0 %}negative{% else %}positive{% endif %}">
+      € {{ "%.2f"|format(delta) }} ({{ "%.2f"|format(delta_pct) }}%)
+    </strong>
+  </div>
+
+  <img src="{{ url_for('static', filename=image.split('/')[-1]) }}" alt="Grafico previsione">
+
+  {% if analisi %}
+    <div style="margin-top: 2rem; background-color: #1e1e1e; padding: 1rem; border-left: 4px solid #81c784;">
+      <h3>🧠 Decisione dell'IA</h3>
+      <p>{{ analisi.replace('\n', '<br>')|safe }}</p>
+    </div>
+  {% endif %}
+
+  {% if not forecast.empty %}
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Valore previsto (yhat)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in forecast.itertuples() %}
+        <tr>
+          <td>{{ row.ds.strftime('%Y-%m-%d') }}</td>
+          <td>{{ "%.2f"|format(row.yhat) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="margin-top: 2rem; color: #e57373;">⚠️ Nessun dato di previsione disponibile.</p>
+  {% endif %}
+
+</body>
+</html>

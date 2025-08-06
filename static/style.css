@@ -1,0 +1,144 @@
+/* Stile Generale */
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #121212;
+    color: #f0f0f0;
+    margin: 0;
+    padding: 2rem;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #1e1e1e;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    color: #90caf9;
+    margin: 0;
+}
+
+/* Status Bar */
+.status-bar {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.status-bar span {
+    margin-left: 1.5rem;
+}
+.positive { color: #81c784; }
+.negative { color: #e57373; }
+
+/* Bottoni e Link */
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-primary { background: #64b5f6; color: #121212; }
+.btn-primary:hover { background: #90caf9; }
+.btn-secondary { background: #424242; color: #f0f0f0; }
+.btn-danger { background: #d32f2f; color: #f0f0f0; }
+.btn-large { font-size: 1.2rem; padding: 0.8rem 1.5rem; }
+
+.back-link {
+    color: #aaa;
+    text-decoration: none;
+}
+.back-link:hover {
+    color: #f0f0f0;
+}
+
+/* Liste e Tabelle */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+}
+th, td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+th {
+    background: #2a2a2a;
+    color: #f0f0f0;
+}
+td.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+td.actions form {
+    margin: 0;
+}
+
+/* Form di Creazione */
+.creation-form .form-group {
+    margin-bottom: 1.5rem;
+}
+.creation-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: #bb86fc;
+}
+.creation-form select, .creation-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: #2c2c2c;
+    border: 1px solid #444;
+    color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Contenuto Prodotto */
+.product-content {
+    background: #121212;
+    padding: 1.5rem;
+    border-radius: 5px;
+    line-height: 1.7;
+}
+.product-content h1, .product-content h2, .product-content h3 {
+    color: #f48fb1;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+}
+.product-content code {
+    background: #2c2c2c;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+}
+.product-content pre {
+    background: #2c2c2c;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+.product-content table {
+    margin: 1.5rem 0;
+}
+.product-content blockquote {
+    border-left: 4px solid #bb86fc;
+    padding-left: 1rem;
+    margin-left: 0;
+    color: #ccc;
+}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA Finanza Locale</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: #1e1e1e;
+      overflow-y: auto;
+      padding: 1rem;
+      border-right: 1px solid #333;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .chat-box {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: #1e1e1e;
+    }
+
+    .user { border-left: 4px solid #64b5f6; }
+    .bot  { border-left: 4px solid #81c784; }
+
+    form {
+      background: #121212;
+      padding: 1rem;
+      border-top: 1px solid #333;
+    }
+
+    textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      border: 1px solid #333;
+      border-radius: 5px;
+      margin-top: 0.5rem;
+      resize: none;
+    }
+
+    input[type="submit"] {
+      background: #64b5f6;
+      color: black;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: #64b5f6;
+      border: none;
+      border-radius: 5px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        display: none;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #333;
+      }
+
+      .sidebar.show {
+        display: block;
+      }
+
+      .main {
+        flex: none;
+        height: auto;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+  <div class="sidebar" id="sidebar">
+    <a href="/reset" style="display:block; background:#2196f3; color:white; padding:0.5rem; border-radius:5px; margin-bottom:0.5rem;">➕ Nuova chat</a>
+    <a href="/dashboard" style="display:block; background:#4caf50; color:white; padding:0.5rem; border-radius:5px; margin-bottom:0.5rem;">📊 Dashboard</a>
+    <a href="/analisi-settimanale" style="display:block; background:#607d8b; color:white; padding:0.5rem; border-radius:5px; margin-bottom:1rem;">📅 Analisi settimanale</a>
+
+    <h2>💬 Storico Chat</h2>
+    <ul style="list-style:none; padding:0;" id="history-list">
+		{% for chat in chats %}
+	  <li style="margin-bottom:0.5rem;">
+		<a href="/load/{{ chat[0] }}" style="color:#90caf9; text-decoration:none;">
+		  {{ chat[1] or "Chat" }}<br />
+		  <small style="color:#aaa;">🕒 {{ chat[2][:16] }}</small>
+		</a>
+		
+		{% if chat[0] == current_chat %}
+		<form method="POST" action="/delete" onsubmit="return confirm('Eliminare questa chat?')" style="margin-top: 0.2rem;">
+		  <input type="hidden" name="chat_id" value="{{ chat[0] }}">
+		  <button type="submit" style="background:#f44336; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">
+			🗑 Elimina
+		  </button>
+		</form>
+		{% endif %}
+	  </li>
+	  {% endfor %}
+	</ul>
+
+  </div>
+
+  <div class="main">
+	<div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 1rem; background:#1e1e1e; border-bottom:1px solid #333;">
+	  <div><strong>🧠 Modello attivo:</strong> {{ model_info }}</div>
+	  <div><strong>💻 GPU:</strong>
+		{% if gpu_status %}
+		  <span style="color:#4caf50;">🟢 attiva</span>
+		{% else %}
+		  <span style="color:#f44336;">🔴 non attiva</span>
+		{% endif %}
+	  </div>
+	</div>
+
+    <div class="chat-area" id="chat-area">
+      {% for role, content in history %}
+      <div class="chat-box {{ role }}">
+        <strong>{{ "Tu" if role == "user" else "AI" }}:</strong><br />
+        {{ content | safe }}
+      </div>
+      {% endfor %}
+      <div id="typing-indicator" style="display:none; font-style:italic; color:#aaa;">💬 Sta scrivendo...</div>
+      <div id="stream"></div>
+    </div>
+
+    <form method="POST" action="/ask" onsubmit="startStream(event)">
+      <label for="model">Modello:</label>
+      <select name="model" id="model">
+        <option value="mixtral">Mixtral</option>
+        <option value="llama3">LLaMA 3</option>
+        <option value="phi3">Phi-3</option>
+      </select>
+      <label><input type="checkbox" name="fast_mode" id="fast_mode" /> Modalità veloce</label>
+      <textarea name="prompt" id="prompt" rows="1" placeholder="Scrivi la tua domanda..." required></textarea>
+      <input type="submit" value="Invia" />
+    </form>
+  </div>
+
+	<script>
+	  function toggleSidebar() {
+		const sidebar = document.getElementById("sidebar");
+		sidebar.classList.toggle("show");
+	  }
+
+	  function scrollChatToBottom() {
+		const chatArea = document.getElementById("chat-area");
+		chatArea.scrollTop = chatArea.scrollHeight;
+	  }
+
+	  function startStream(event) {
+		event.preventDefault();
+		const form = event.target;
+		const formData = new FormData(form);
+		const streamDiv = document.getElementById("stream");
+		streamDiv.innerHTML = "<i>⚙️ L'IA sta pensando...</i>";
+
+		// ✅ Pulisce il campo input
+		document.getElementById("prompt").value = "";
+
+		fetch("/ask", {
+		  method: "POST",
+		  body: formData
+		}).then(response => {
+		  const reader = response.body.getReader();
+		  const decoder = new TextDecoder("utf-8");
+		  let content = "";
+		  function read() {
+			reader.read().then(({ done, value }) => {
+			  if (done) {
+				scrollChatToBottom();
+				return;
+			  }
+			  const text = decoder.decode(value);
+			  content += text;
+			  streamDiv.innerHTML = content;
+			  scrollChatToBottom();
+			  read();
+			});
+		  }
+		  read();
+		});
+	  }
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.topic }} - AI Factory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ product.topic }}</h1>
+            <a href="/" class="back-link">⬅️ Torna alla Dashboard</a>
+        </header>
+
+        <div class="product-content">
+            {{ product.content_html | safe }}
+        </div>
+    </div>
+</body>
+</html>

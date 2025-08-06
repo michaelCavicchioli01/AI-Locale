@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Errore - AI Factory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="negative">❌ Si è verificato un errore</h1>
+            <a href="/" class="back-link">⬅️ Torna alla Dashboard</a>
+        </header>
+
+        <div class="error-box">
+            <p>Non è stato possibile completare l'operazione. Dettagli dell'errore:</p>
+            <pre>{{ message }}</pre>
+        </div>
+    </div>
+</body>
+</html>

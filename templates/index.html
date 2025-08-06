@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Product Factory - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏭 AI Product Factory</h1>
+            <div class="status-bar">
+                <span><strong>🧠 Modello:</strong> {{ model_info }}</span>
+                <span><strong>💻 GPU:</strong>
+                    {% if gpu_status %}
+                        <span class="positive">🟢 Attiva</span>
+                    {% else %}
+                        <span class="negative">🔴 Non Attiva</span>
+                    {% endif %}
+                </span>
+            </div>
+        </header>
+
+        <a href="/create" class="btn btn-primary">✨ Crea Nuovo Prodotto</a>
+
+        <h2>📚 Prodotti Generati</h2>
+        <div class="product-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo Prodotto</th>
+                        <th>Argomento</th>
+                        <th>Data Creazione</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.product_type }}</td>
+                        <td>{{ product.topic }}</td>
+                        <td>{{ product.created_at }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-secondary">📄 Visualizza</a>
+                            <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questo prodotto?');">
+                                <button type="submit" class="btn btn-danger">🗑️ Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem;">Nessun prodotto generato. Inizia creandone uno nuovo!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
